@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .card-container { display: flex; gap: 20px; margin-bottom: 30px; }
+    .card { border: 1px solid #ccc; padding: 20px; flex: 1; text-align: center; background: #f9f9f9; }
+    table { border-collapse: collapse; width: 100%; margin-top: 30px; }
+    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <h2>Admin Dashboard</h2>
+
+  <!-- Summary Cards -->
+  <div class="card-container">
+    <div class="card"><h3>Total Users</h3><p id="userCount">Loading...</p></div>
+    <div class="card"><h3>Total Jobs</h3><p id="jobCount">Loading...</p></div>
+    <div class="card"><h3>Total Referrals</h3><p id="referralCount">Loading...</p></div>
+  </div>
+
+  <!-- Charts -->
+  <h3>Referral Status Overview</h3>
+  <canvas id="referralChart" width="400" height="400"></canvas>
+
+  <h3>Recruiter Performance (Recruiter ID = 2)</h3>
+  <canvas id="recruiterChart" width="400" height="400"></canvas>
+
+  <h3>Candidate Success Rate (Candidate ID = 1)</h3>
+  <canvas id="candidateChart" width="400" height="400"></canvas>
+
+  <!-- Recruiter Table -->
+  <h3>Recruiter-wise Jobs & Referrals</h3>
+  <table id="recruiterTable">
+    <thead>
+      <tr>
+        <th>Recruiter Name</th>
+        <th>Total Jobs</th>
+        <th>Accepted Referrals</th>
+        <th>Rejected Referrals</th>
+        <th>Pending Referrals</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // ✅ Summary counts
+    fetch("http://localhost:8080/api/admin/users/count")
+      .then(res => res.json())
+      .then(data => document.getElementById("userCount").innerText = data.count);
+
+    fetch("http://localhost:8080/api/admin/jobs/count")
+      .then(res => res.json())
+      .then(data => document.getElementById("jobCount").innerText = data.count);
+
+    fetch("http://localhost:8080/api/admin/referrals/count")
+      .then(res => res.json())
+      .then(data => document.getElementById("referralCount").innerText = data.count);
+
+    // ✅ Referral status chart
+    fetch("http://localhost:8080/api/analytics/referrals")
+      .then(res => res.json())
+      .then(data => {
+        new Chart(document.getElementById('referralChart'), {
+          type: 'pie',
+          data: { labels: Object.keys(data), datasets: [{ data: Object.values(data), backgroundColor: ['#4CAF50','#F44336','#FFC107'] }] },
+          options: { plugins: { title: { display: true, text: 'Overall Referral Status' } } }
+        });
+      });
+
+    // ✅ Recruiter performance chart
+    fetch("http://localhost:8080/api/analytics/recruiter/2")
+      .then(res => res.json())
+      .then(data => {
+        new Chart(document.getElementById('recruiterChart'), {
+          type: 'bar',
+          data: { labels: Object.keys(data), datasets: [{ label: 'Recruiter Referrals', data: Object.values(data), backgroundColor: ['#2196F3','#E91E63','#FF9800'] }] },
+          options: { plugins: { title: { display: true, text: 'Recruiter Referral Performance' } } }
+        });
+      });
+
+    // ✅ Candidate success rate chart
+    fetch("http://localhost:8080/api/analytics/candidate/1/success")
+      .then(res => res.json())
+      .then(data => {
+        new Chart(document.getElementById('candidateChart'), {
+          type: 'doughnut',
+          data: { labels: ['Accepted','Total Referrals'], datasets: [{ data: [data.Accepted, data.Total], backgroundColor: ['#4CAF50','#9E9E9E'] }] },
+          options: { plugins: { title: { display: true, text: 'Success Rate: ' + data.SuccessRate.toFixed(2) + '%' } } }
+        });
+      });
+
+    // ✅ Recruiter table (example recruiter IDs)
+    const recruiterIds = [2,3]; // recruiter user IDs
+    recruiterIds.forEach(id => {
+      Promise.all([
+        fetch(`http://localhost:8080/api/admin/jobs/count?recruiterId=${id}`).then(res => res.json()),
+        fetch(`http://localhost:8080/api/analytics/recruiter/${id}`).then(res => res.json()),
+        fetch(`http://localhost:8080/api/admin/users/${id}`).then(res => res.json())
+      ])
+      .then(([jobData, referralData, userData]) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${userData.name}</td>
+          <td>${jobData.count}</td>
+          <td>${referralData.Accepted}</td>
+          <td>${referralData.Rejected}</td>
+          <td>${referralData.Pending}</td>
+        `;
+        document.querySelector("#recruiterTable tbody").appendChild(row);
+      });
+    });
+  </script>
+</body>
+</html>

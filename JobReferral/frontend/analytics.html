@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Referral Analytics Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="container mt-4">
+  <h2>Referral Analytics Dashboard</h2>
+
+  <!-- Overall Referral Status -->
+  <h3>Overall Referral Status</h3>
+  <canvas id="overallChart" width="400" height="400"></canvas>
+
+  <!-- Recruiter-wise Referral Status -->
+  <h3>Recruiter Referral Performance</h3>
+  <canvas id="recruiterChart" width="400" height="400"></canvas>
+
+  <!-- Candidate Success Rate -->
+  <h3>Candidate Success Rate</h3>
+  <canvas id="candidateChart" width="400" height="400"></canvas>
+
+  <script>
+    // ✅ Overall referral analytics
+    fetch("http://localhost:8080/api/analytics/referrals", {
+      headers: { "Authorization": localStorage.getItem("jwtToken") }
+    })
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById('overallChart'), {
+        type: 'pie',
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            data: Object.values(data),
+            backgroundColor: ['#4CAF50', '#F44336', '#FFC107']
+          }]
+        },
+        options: { plugins: { title: { display: true, text: 'Overall Referral Status' } } }
+      });
+    });
+
+    // ✅ Recruiter-wise analytics (example recruiterId = 2)
+    fetch("http://localhost:8080/api/analytics/recruiter/2", {
+      headers: { "Authorization": localStorage.getItem("jwtToken") }
+    })
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById('recruiterChart'), {
+        type: 'bar',
+        data: {
+          labels: Object.keys(data),
+          datasets: [{
+            label: 'Recruiter Referrals',
+            data: Object.values(data),
+            backgroundColor: ['#2196F3', '#E91E63', '#FF9800']
+          }]
+        },
+        options: { plugins: { title: { display: true, text: 'Recruiter Referral Performance' } } }
+      });
+    });
+
+    // ✅ Candidate success rate (example candidateId = 1)
+    fetch("http://localhost:8080/api/analytics/candidate/1/success", {
+      headers: { "Authorization": localStorage.getItem("jwtToken") }
+    })
+    .then(res => res.json())
+    .then(data => {
+      new Chart(document.getElementById('candidateChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Accepted', 'Total Referrals'],
+          datasets: [{
+            data: [data.Accepted, data.Total],
+            backgroundColor: ['#4CAF50', '#9E9E9E']
+          }]
+        },
+        options: { plugins: { title: { display: true, text: 'Candidate Success Rate (' + data.SuccessRate.toFixed(2) + '%)' } } }
+      });
+    });
+  </script>
+</body>
+</html>
