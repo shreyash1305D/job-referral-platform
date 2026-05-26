@@ -1,56 +1,52 @@
 package com.JobReferral.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    private String name;
-
-    @Column(unique = true)
+    private Long id;
+    
+    @Column(unique = true, nullable = false)
     private String email;
-
-    @JsonIgnore
+    
+    @Column(nullable = false)
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Role role;
-
-    private String skills;
-
-    private String resumeUrl;
-
-    public enum Role {
-        ADMIN,
-        HR,
-        EMPLOYEE,
-        CANDIDATE
-    }
-
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-
-    public String getSkills() { return skills; }
-    public void setSkills(String skills) { this.skills = skills; }
-
-    public String getResumeUrl() { return resumeUrl; }
-    public void setResumeUrl(String resumeUrl) { this.resumeUrl = resumeUrl; }
+    
+    @Column(nullable = false)
+    private String firstName;
+    
+    @Column(nullable = false)
+    private String lastName;
+    
+    @Column(nullable = false)
+    private String role; // ADMIN, RECRUITER, CANDIDATE
+    
+    @Column(nullable = false)
+    private String company;
+    
+    @Column(length = 1000)
+    private String bio;
+    
+    @Column(name = "profile_photo_url")
+    private String profilePhotoUrl;
+    
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT true")
+    private Boolean isActive = true;
+    
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }

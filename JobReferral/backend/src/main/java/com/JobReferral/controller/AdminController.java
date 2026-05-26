@@ -1,50 +1,47 @@
 package com.JobReferral.controller;
 
+import com.JobReferral.entities.Referral;
+import com.JobReferral.entities.Status;
 import com.JobReferral.service.AdminService;
-import com.JobReferral.entities.Referral.Status;
-import com.JobReferral.entities.User;
-import com.JobReferral.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/admin")
+@CrossOrigin(origins = {"http://localhost:5173", "http://localhost:3000"})
 public class AdminController {
-
+    
     @Autowired
     private AdminService adminService;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    // ✅ Recruiter details by ID
-    @GetMapping("/users/{id}")
-    public User getRecruiterDetails(@PathVariable int id) {
-        return userRepository.findById(id).orElse(null);
+    
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> getDashboard() {
+        Map<String, Object> dashboard = new HashMap<>();
+        dashboard.put("totalReferrals", adminService.getTotalReferrals());
+        dashboard.put("acceptedReferrals", adminService.getAcceptedReferrals());
+        dashboard.put("pendingReferrals", adminService.getPendingReferrals());
+        dashboard.put("rejectedReferrals", adminService.getRejectedReferrals());
+        return ResponseEntity.ok(dashboard);
     }
-
-    // ✅ Recruiter jobs count
-    @GetMapping("/jobs/count")
-    public Map<String, Long> getRecruiterJobCount(@RequestParam(required = false) Integer recruiterId) {
-        Map<String, Long> result = new HashMap<>();
-        if (recruiterId != null) {
-            result.put("count", adminService.getRecruiterJobCount(recruiterId));
-        } else {
-            result.put("count", adminService.getJobCount());
+    
+    @GetMapping("/referrals")
+    public ResponseEntity<?> getAllReferrals() {
+        List<Referral> referrals = adminService.getAllReferrals();
+        return ResponseEntity.ok(referrals);
+    }
+    
+    @GetMapping("/referrals/status/{status}")
+    public ResponseEntity<?> getReferralsByStatus(@PathVariable String status) {
+        try {
+            Status statusEnum = Status.valueOf(status.toUpperCase());
+            List<Referral> referrals = adminService.getReferralsByStatus(statusEnum);
+            return ResponseEntity.ok(referrals);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid status");
         }
-        return result;
-    }
-
-    // ✅ Recruiter referrals breakdown
-    @GetMapping("/recruiter/{id}/referrals")
-    public Map<String, Long> getRecruiterReferrals(@PathVariable int id) {
-        Map<String, Long> result = new HashMap<>();
-        result.put("Accepted", adminService.getRecruiterReferralCount(id, Status.accepted));
-        result.put("Rejected", adminService.getRecruiterReferralCount(id, Status.rejected));
-        result.put("Pending", adminService.getRecruiterReferralCount(id, Status.requested));
-        return result;
     }
 }

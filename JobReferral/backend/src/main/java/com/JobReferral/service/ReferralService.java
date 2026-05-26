@@ -1,83 +1,55 @@
 package com.JobReferral.service;
 
-import com.JobReferral.entities.Job;
 import com.JobReferral.entities.Referral;
-import com.JobReferral.entities.Referral.Status;
-import com.JobReferral.entities.User;
-import com.JobReferral.repository.JobRepository;
+import com.JobReferral.entities.Status;
 import com.JobReferral.repository.ReferralRepository;
-import com.JobReferral.repository.UserRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReferralService {
-
+    
     @Autowired
     private ReferralRepository referralRepository;
     
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private JobRepository jobRepository;
-    
-    // ✅ Candidate requests a referral
-    public Referral requestReferral(Referral referral) {
-        User candidate = userRepository.findById(referral.getCandidate().getId())
-                .orElseThrow(() -> new RuntimeException("Candidate not found"));
-        User employee = userRepository.findById(referral.getEmployee().getId())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
-        Job job = jobRepository.findById(referral.getJob().getId())
-                .orElseThrow(() -> new RuntimeException("Job not found"));
-
-        referral.setCandidate(candidate);
-        referral.setEmployee(employee);
-        referral.setJob(job);
-
+    public Referral createReferral(Referral referral) {
+        referral.setStatus(Status.PENDING);
+        referral.setCreatedAt(LocalDateTime.now());
+        referral.setUpdatedAt(LocalDateTime.now());
         return referralRepository.save(referral);
     }
-
-    // ✅ HR/Employee updates referral status
-    public Referral updateStatus(int id, Status status) {
-        return referralRepository.findById(id)
-                .map(ref -> {
-                    ref.setStatus(status);
-                    return referralRepository.save(ref);
-                })
-                .orElse(null);
+    
+    public List<Referral> getReferralsByJobId(Long jobId) {
+        return referralRepository.findByJobPostingId(jobId);
     }
-
-    // ✅ Get referrals requested by candidate
-    public List<Referral> getCandidateReferrals(int candidateId) {
-        return referralRepository.findByCandidateId(candidateId);
+    
+    public List<Referral> getReferralsByReferrerId(Long referrerId) {
+        return referralRepository.findByReferrerId(referrerId);
     }
-
-    // ✅ Get referrals assigned to employee
-    public List<Referral> getEmployeeReferrals(int employeeId) {
-        return referralRepository.findByEmployeeId(employeeId);
+    
+    public List<Referral> getReferralsByStatus(String status) {
+        return referralRepository.findByStatus(status);
     }
-
-    // ✅ Get pending referrals (requested only)
-    public List<Referral> getPendingReferrals() {
-        return referralRepository.findByStatus(Status.requested);
+    
+    public Referral updateReferralStatus(Long id, String status) {
+        Optional<Referral> referral = referralRepository.findById(id);
+        if (referral.isPresent()) {
+            Referral existing = referral.get();
+            try {
+                existing.setStatus(Status.valueOf(status.toUpperCase()));
+                existing.setUpdatedAt(LocalDateTime.now());
+                return referralRepository.save(existing);
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+        return null;
     }
-
-    // ✅ Count referrals by status (for analytics)
-    public long countByStatus(Status status) {
-        return referralRepository.countByStatus(status);
+    
+    public Optional<Referral> getReferralById(Long id) {
+        return referralRepository.findById(id);
     }
- // Recruiter-wise referral counts
-    public long countRecruiterReferrals(int recruiterId, Status status) {
-        return referralRepository.countByJobRecruiterIdAndStatus(recruiterId, status);
-    }
-
-    // Candidate-wise referral counts
-    public long countCandidateReferrals(int candidateId, Status status) {
-        return referralRepository.countByCandidateIdAndStatus(candidateId, status);
-    }
-
 }
