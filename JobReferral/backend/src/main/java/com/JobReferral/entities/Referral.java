@@ -1,75 +1,52 @@
 package com.JobReferral.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "referrals")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Referral {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    // ✅ Relation with Job
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "job_id", nullable = false)
-    private Job job;
-
-    // ✅ Candidate (User applying for referral)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "candidate_id", nullable = false)
-    private User candidate;
-
-    // ✅ Employee (User giving referral)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private User employee;
-
-    // ✅ Referral status
+    private Long id;
+    
+    @ManyToOne
+    @JoinColumn(name = "job_posting_id", nullable = false)
+    private JobPosting jobPosting;
+    
+    @ManyToOne
+    @JoinColumn(name = "referrer_id", nullable = false)
+    private User referrer;
+    
+    @Column(nullable = false)
+    private String candidateName;
+    
+    @Column(nullable = false)
+    private String candidateEmail;
+    
+    @Column(nullable = false)
+    private String candidatePhone;
+    
+    @Column(length = 2000)
+    private String candidateBio;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Status status = Status.requested; // default value
-
-    // ✅ Enum for referral status
-    public enum Status {
-        requested,
-        accepted,
-        rejected
-    }
-
-    // ✅ Getters & Setters
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public Job getJob() {
-        return job;
-    }
-    public void setJob(Job job) {
-        this.job = job;
-    }
-
-    public User getCandidate() {
-        return candidate;
-    }
-    public void setCandidate(User candidate) {
-        this.candidate = candidate;
-    }
-
-    public User getEmployee() {
-        return employee;
-    }
-    public void setEmployee(User employee) {
-        this.employee = employee;
-    }
-
-    public Status getStatus() {
-        return status;
-    }
-    public void setStatus(Status status) {
-        this.status = status;
-    }
+    private Status status = Status.PENDING;
+    
+    @Column(length = 1000)
+    private String notes;
+    
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 }
