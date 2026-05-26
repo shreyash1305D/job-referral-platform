@@ -1,0 +1,213 @@
+.my-referrals-page {
+  min-height: calc(100vh - 200px);
+  background: #f7fafc;
+  padding: 2rem;
+}
+
+.my-referrals-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 2rem;
+}
+
+.subtitle {
+  color: #718096;
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e2e8f0;
+  background: white;
+  border-radius: 2rem;
+  cursor: pointer;
+  font-weight: 600;
+  color: #718096;
+  transition: all 0.3s ease;
+}
+
+.filter-tab:hover {
+  border-color: #667eea;
+  color: #667eea;
+}
+
+.filter-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+}
+
+.referrals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.referral-card {
+  background: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  border-left: 4px solid #667eea;
+}
+
+.referral-card:hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.referral-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.referral-header h3 {
+  margin: 0;
+  color: #2d3748;
+  font-size: 1.1rem;
+}
+
+.job-title {
+  color: #718096;
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.status-badge.pending {
+  background: #fff5e6;
+  color: #cc7700;
+}
+
+.status-badge.accepted {
+  background: #e6ffe6;
+  color: #008000;
+}
+
+.status-badge.rejected {
+  background: #ffe6e6;
+  color: #cc0000;
+}
+
+.status-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.referral-content {
+  padding: 1.5rem;
+}
+
+.referral-content p {
+  margin: 0 0 0.75rem;
+  color: #4a5568;
+  font-size: 0.95rem;
+}
+
+.referral-content strong {
+  color: #2d3748;
+  display: inline-block;
+  min-width: 60px;
+}
+
+.referral-content a {
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.referral-content a:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.bio {
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.bio strong {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #2d3748;
+}
+
+.bio p {
+  margin: 0;
+  color: #4a5568;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.referral-footer {
+  padding: 0 1.5rem 1.5rem;
+  color: #a0aec0;
+  font-size: 0.8rem;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 1rem;
+  color: #718096;
+}
+
+.empty-state svg {
+  margin-bottom: 1rem;
+  color: #cbd5e0;
+}
+
+.empty-state h3 {
+  margin: 1rem 0;
+  color: #2d3748;
+  font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+  .referrals-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .filter-tabs {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+}
