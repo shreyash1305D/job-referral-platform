@@ -1,5 +1,6 @@
 package com.JobReferral.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,28 +11,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(nullable = false)
     private String name;
 
-    @Column(unique = true, nullable = false)
+    @Column(unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @JsonIgnore
     private String password;
 
-    // ✅ Role field (candidate, employee, hr, admin)
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
-    // ✅ Store multiple skills as text (comma-separated or JSON string)
-    @Lob
     private String skills;
 
-    // ✅ Resume link (cloud storage or DB path)
     private String resumeUrl;
 
-    // --- Getters & Setters ---
+    public enum Role {
+        ADMIN,
+        HR,
+        EMPLOYEE,
+        CANDIDATE
+    }
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -52,12 +53,4 @@ public class User {
 
     public String getResumeUrl() { return resumeUrl; }
     public void setResumeUrl(String resumeUrl) { this.resumeUrl = resumeUrl; }
-
-    // --- Enum for roles ---
-    public enum Role {
-        candidate,
-        employee,
-        hr,
-        admin
-    }
 }
