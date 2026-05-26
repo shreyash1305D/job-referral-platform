@@ -21,7 +21,7 @@ client.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle response errors
+// Handle errors
 client.interceptors.response.use(
   (response) => response,
   (error) => {

@@ -1,9 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { AuthContext } from '../auth/AuthContext';
-import client from '../api/client';
+import { useAuth } from '../auth/useAuth';
+import { authAPI } from '../api/auth';
 import toast from 'react-hot-toast';
-import { Mail, Lock, LogIn } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import '../styles/auth.css';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -11,14 +12,14 @@ const Login = () => {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { login } = useAuth();
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -27,83 +28,122 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await client.post('/auth/login', formData);
+      const response = await authAPI.login(formData);
       if (response.data.success) {
         login(response.data.user, response.data.token);
-        toast.success('Login successful!');
+        toast.success('Welcome back!');
         navigate('/');
       } else {
         toast.error(response.data.message || 'Login failed');
       }
     } catch (error) {
       toast.error(error.response?.data?.message || 'Login failed. Please try again.');
-      console.error('Login error:', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <div className="flex justify-center mb-6">
-          <div className="bg-blue-100 p-3 rounded-full">
-            <LogIn className="text-blue-600" size={32} />
+    <div className="auth-page">
+      <div className="auth-container">
+        <div className="auth-form">
+          <div className="auth-header">
+            <h1>Welcome Back</h1>
+            <p>Sign in to continue to JobReferral</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="form">
+            <div className="form-group">
+              <label htmlFor="email">Email Address</label>
+              <div className="input-wrapper">
+                <Mail size={20} />
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="you@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="password">Password</label>
+              <div className="input-wrapper">
+                <Lock size={20} />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  id="password"
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="toggle-password"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+
+            <div className="form-options">
+              <label className="remember-me">
+                <input type="checkbox" />
+                <span>Remember me</span>
+              </label>
+              <a href="#forgot" className="forgot-password">
+                Forgot password?
+              </a>
+            </div>
+
+            <button
+              type="submit"
+              className="btn-submit"
+              disabled={loading}
+            >
+              {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+          </form>
+
+          <div className="auth-footer">
+            <p>
+              Don't have an account?{' '}
+              <Link to="/register" className="auth-link">
+                Create one now
+              </Link>
+            </p>
           </div>
         </div>
-        
-        <h1 className="text-3xl font-bold text-gray-800 mb-2 text-center">Welcome Back</h1>
-        <p className="text-gray-500 text-center mb-8">Sign in to your account</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input
-                type="email"
-                name="email"
-                placeholder="you@example.com"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
+        <div className="auth-side">
+          <div className="side-content">
+            <h2>Join Our Community</h2>
+            <p>Connect with top professionals and land your dream job through intelligent referrals.</p>
+            <div className="features">
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Smart Job Matching</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Referral Network</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Career Growth</span>
+              </div>
+              <div className="feature-item">
+                <div className="feature-icon">✓</div>
+                <span>Success Stories</span>
+              </div>
             </div>
           </div>
-
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-3 text-gray-400" size={20} />
-              <input
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Signing in...' : 'Sign In'}
-          </button>
-        </form>
-
-        <div className="mt-6 pt-6 border-t border-gray-200">
-          <p className="text-center text-gray-600">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-blue-600 hover:underline font-semibold">
-              Register here
-            </Link>
-          </p>
         </div>
       </div>
     </div>

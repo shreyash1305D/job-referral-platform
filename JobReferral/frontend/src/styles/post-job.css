@@ -1,0 +1,207 @@
+.post-job-page {
+  min-height: calc(100vh - 200px);
+  background: #f7fafc;
+  padding: 2rem;
+}
+
+.post-job-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.post-job-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.post-job-header h1 {
+  margin: 0;
+  font-size: 2.25rem;
+  color: #2d3748;
+  margin-bottom: 0.5rem;
+}
+
+.post-job-header p {
+  color: #718096;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.post-job-form {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.form-section {
+  margin-bottom: 3rem;
+}
+
+.form-section:last-of-type {
+  margin-bottom: 2rem;
+}
+
+.form-section h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+  color: #2d3748;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input-wrapper svg {
+  color: #a0aec0;
+  flex-shrink: 0;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.form-group input,
+.form-group select {
+  height: 44px;
+}
+
+.input-wrapper input {
+  border: none;
+  outline: none;
+  flex: 1;
+  background: none;
+  color: #2d3748;
+}
+
+.input-wrapper input::placeholder {
+  color: #cbd5e0;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+  color: #2d3748;
+}
+
+.form-group textarea::placeholder {
+  color: #cbd5e0;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #2d3748;
+}
+
+.btn-secondary:hover {
+  background: #cbd5e0;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .post-job-page {
+    padding: 1rem;
+  }
+
+  .post-job-container {
+    margin: 0;
+  }
+
+  .post-job-form {
+    padding: 1.5rem;
+  }
+
+  .post-job-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}

@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { authAPI } from '../api/auth';
 
 export const AuthContext = createContext();
 
@@ -8,18 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (token) {
-      try {
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          setUser(JSON.parse(storedUser));
-        }
-      } catch (error) {
-        console.error('Error parsing user from localStorage:', error);
-        localStorage.removeItem('user');
-        localStorage.removeItem('token');
-        setToken(null);
-      }
+    const storedUser = localStorage.getItem('user');
+    if (token && storedUser) {
+      setUser(JSON.parse(storedUser));
     }
     setLoading(false);
   }, [token]);
@@ -38,8 +30,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateUser = (updatedData) => {
+    const updatedUser = { ...user, ...updatedData };
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, loading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
